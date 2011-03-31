@@ -11,6 +11,7 @@ class LB(object):
         return ('<LB: id=%s, name=%s, state=%s>' % (self.id,
                 self.name, self.state))
 
+
 class LBDriver(object):
     connectionCls = ConnectionKey
 
@@ -31,3 +32,23 @@ class LBDriver(object):
     def list_balancers(self):
         raise NotImplementedError, \
                 'list_balancers not implemented for this driver'
+
+    def create_balancer(self, balancer):
+        raise NotImplementedError, \
+                'create_balancer not implemented for this driver'
+
+    def destroy_balancer(self, balancer):
+        raise NotImplementedError, \
+                'destroy_balancer not implemented for this driver'
+
+    def balancer_attach_node(self, node):
+        raise NotImplementedError, \
+                'balancer_attach_node not implemented for this driver'
+
+    def balancer_detach_node(self, node):
+        raise NotImplementedError, \
+                'balancer_detach_node not implemented for this driver'
+
+    def balancer_list_nodes(self, balancer):
+        raise NotImplementedError, \
+                'balancer_list_nodes not implemented for this driver'
