@@ -6,7 +6,7 @@ except ImportError:
     import simplejson
 
 from libcloud.common.base import Response
-from libcloud.lb.base import LB, LBDriver
+from libcloud.lb.base import LB, LBNode, LBDriver
 from libcloud.lb.types import Provider
 from libcloud.common.rackspace import (AUTH_HOST_US,
         RackspaceBaseConnection)
@@ -57,11 +57,39 @@ class RackspaceLBDriver(LBDriver):
         return self._to_balancers(
                 self.connection.request('/loadbalancers').object)
 
+    def create_balancer(self, **kwargs):
+        name = kwargs['name']
+        port = kwargs['port']
+        nodes = kwargs['nodes']
+
+        balancer_object = {"loadBalancer":
+                {"name": name,
+                    "port": port,
+                    "protocol": "HTTP",
+                    "virtualIps": [{"type": "PUBLIC"}],
+                    "nodes": [{"address": node.ip,
+                        "port": node.port,
+                        "condition": "ENABLED"} for node in nodes],
+                    }
+                }
+
+        resp = self.connection.request('/loadbalancers',
+                method='POST',
+                data=json.dumps(balancer_object))
+        return self._to_balancer(resp.object["loadBalancer"])
+
+    def destroy_balancer(self, balancer):
+        uri = '/loadbalancers/%s' % (balancer.id)
+        resp = self.connection.request(uri, method='DELETE')
+
+        return resp == 202
+
     def _to_balancers(self, object):
         return [ self._to_balancer(el) for el in object["loadBalancers"] ]
 
     def _to_balancer(self, el):
         lb = LB(id=el["id"],
                 name=el["name"],
-                state=el["status"])
+                state=el["status"],
+                driver=self.connection.driver)
         return lb
