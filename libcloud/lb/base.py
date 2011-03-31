@@ -1,11 +1,33 @@
 from libcloud.common.base import ConnectionKey
 
+class LBNode(object):
+
+    def __init__(self, id, ip, port):
+        self.id = str(id) if id else None
+        self.ip = ip
+        self.port = port
+
+    def __repr__(self):
+        return ('<LBNode: id=%s, address=%s:%s>' % (self.id,
+            self.ip, self.port))
+
+
 class LB(object):
 
-    def __init__(self, id, name, state):
+    def __init__(self, id, name, state, driver):
         self.id = str(id) if id else None
         self.name = name
         self.state = state
+        self.driver = driver
+
+    def attach_node(self, node):
+        return self.driver.balancer_attach_node(self, node)
+
+    def detach_node(self, node):
+        return self.driver.balancer_detach_node(self, node)
+
+    def list_nodes(self):
+        return self.driver.balancer_list_nodes(self)
 
     def __repr__(self):
         return ('<LB: id=%s, name=%s, state=%s>' % (self.id,
@@ -33,7 +55,7 @@ class LBDriver(object):
         raise NotImplementedError, \
                 'list_balancers not implemented for this driver'
 
-    def create_balancer(self, balancer):
+    def create_balancer(self, **kwargs):
         raise NotImplementedError, \
                 'create_balancer not implemented for this driver'
 
@@ -41,7 +63,7 @@ class LBDriver(object):
         raise NotImplementedError, \
                 'destroy_balancer not implemented for this driver'
 
-    def balancer_attach_node(self, node):
+    def balancer_attach_node(self, balancer, node):
         raise NotImplementedError, \
                 'balancer_attach_node not implemented for this driver'
 
