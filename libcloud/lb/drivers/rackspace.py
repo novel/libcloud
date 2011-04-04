@@ -95,6 +95,12 @@ class RackspaceLBDriver(LBDriver):
 
         return self._to_balancer(resp.object["loadBalancer"])
 
+    def balancer_detach_node(self, balancer, node):
+        uri = '/loadbalancers/%s/nodes/%s' (balancer.id, node.id)
+        resp = self.connection.request(uri, method='DELETE')
+
+        return self.status == 202
+
     def balancer_list_nodes(self, balancer):
         uri = '/loadbalancers/%s/nodes' % (balancer.id)
         return self._to_nodes(

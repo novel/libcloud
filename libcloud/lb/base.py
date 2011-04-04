@@ -71,7 +71,7 @@ class LBDriver(object):
         raise NotImplementedError, \
                 'balancer_attach_node not implemented for this driver'
 
-    def balancer_detach_node(self, node):
+    def balancer_detach_node(self, balancer, node):
         raise NotImplementedError, \
                 'balancer_detach_node not implemented for this driver'
 
