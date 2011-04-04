@@ -14,7 +14,7 @@ def main():
 
     balancers = driver.list_balancers()
 
-    # creating a balancer which balancers traffic across two
+    # creating a balancer which balances traffic across two
     # nodes: 192.168.86.1:80 and 192.168.86.2:8080. Balancer
     # itself listens on port 80/tcp
     new_balancer_name = 'testlb' + os.urandom(4).encode('hex')
