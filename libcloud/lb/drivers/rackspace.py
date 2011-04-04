@@ -82,7 +82,18 @@ class RackspaceLBDriver(LBDriver):
         uri = '/loadbalancers/%s' % (balancer.id)
         resp = self.connection.request(uri, method='DELETE')
 
-        return resp == 202
+        return resp.status == 202
+
+    def balancer_detail(self, **kwargs):
+        try:
+            balancer_id = kwargs['balancer_id']
+        except KeyError:
+            balancer_id = kwargs['balancer'].id
+
+        uri = '/loadbalancers/%s' % (balancer_id)
+        resp = self.connection.request(uri)
+
+        return self._to_balancer(resp.object["loadBalancer"])
 
     def _to_balancers(self, object):
         return [ self._to_balancer(el) for el in object["loadBalancers"] ]
