@@ -95,6 +95,11 @@ class RackspaceLBDriver(LBDriver):
 
         return self._to_balancer(resp.object["loadBalancer"])
 
+    def balancer_list_nodes(self, balancer):
+        uri = '/loadbalancers/%s/nodes' % (balancer.id)
+        return self._to_nodes(
+                self.connection.request(uri).object)
+
     def _to_balancers(self, object):
         return [ self._to_balancer(el) for el in object["loadBalancers"] ]
 
@@ -104,3 +109,12 @@ class RackspaceLBDriver(LBDriver):
                 state=el["status"],
                 driver=self.connection.driver)
         return lb
+
+    def _to_nodes(self, object):
+        return [ self._to_node(el) for el in object["nodes"] ]
+
+    def _to_node(self, el):
+        lbnode = LBNode(id=el["id"],
+                ip=el["address"],
+                port=el["port"])
+        return lbnode
