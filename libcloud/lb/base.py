@@ -1,5 +1,11 @@
 from libcloud.common.base import ConnectionKey
 
+__all__ = [
+        "LBNode",
+        "LB",
+        "LBDriver",
+        ]
+
 class LBNode(object):
 
     def __init__(self, id, ip, port):
@@ -13,6 +19,9 @@ class LBNode(object):
 
 
 class LB(object):
+    """
+    Provide a common interface for handling Load Balancers.
+    """
 
     def __init__(self, id, name, state, driver):
         self.id = str(id) if id else None
@@ -35,6 +44,13 @@ class LB(object):
 
 
 class LBDriver(object):
+    """
+    A base LBDriver class to derive from
+
+    This class is always subclassed by a specific driver.
+
+    """
+
     connectionCls = ConnectionKey
 
     def __init__(self, key, secret=None, secure=True):
@@ -52,29 +68,91 @@ class LBDriver(object):
         self.connection.connect()
 
     def list_balancers(self):
+        """
+        List all loadbalancers
+
+        @return: C{list} of L{LB} objects
+
+        """
+
         raise NotImplementedError, \
                 'list_balancers not implemented for this driver'
 
     def create_balancer(self, **kwargs):
+        """
+        Create a new load balancer instance
+
+        @keyword name: Name of the new load balancer (required)
+        @type name: C{str}
+        @keyword port: Port the load balancer should listen on (required)
+        @type port: C{str}
+        @keyword nodes: C{list} of L{LBNode}s to attach to balancer
+        @type: C{list} of L{LBNode}s
+
+        """
+
         raise NotImplementedError, \
                 'create_balancer not implemented for this driver'
 
     def destroy_balancer(self, balancer):
+        """Destroy a load balancer
+
+        @return: C{bool} True if the destroy was successful, otherwise False
+
+        """
+
         raise NotImplementedError, \
                 'destroy_balancer not implemented for this driver'
 
     def balancer_detail(self, **kwargs):
+        """
+        Returns a detailed info about load balancer given by
+        existing L{LB} object or its id
+
+        @keyword balancer: L{LB} object you already fetched using list method for example
+        @type balancer: L{LB}
+        @keyword balancer_id: id of a load balancer you want to fetch
+        @type balancer_id: C{str}
+
+        @return: L{LB}
+
+        """
+
         raise NotImplementedError, \
                 'balancer_detail not implemented for this driver'
 
     def balancer_attach_node(self, balancer, **kwargs):
+        """
+        Attach a node to balancer
+
+        @keyword ip: IP address of a node
+        @type ip: C{str}
+        @keyword port: port that services we're balancing listens on on the node
+        @keyword port: C{str}
+
+        """
+
         raise NotImplementedError, \
                 'balancer_attach_node not implemented for this driver'
 
     def balancer_detach_node(self, balancer, node):
+        """
+        Detach node from balancer
+
+        @return: C{bool} True if node detach was successful, otherwise False
+
+        """
+
         raise NotImplementedError, \
                 'balancer_detach_node not implemented for this driver'
 
     def balancer_list_nodes(self, balancer):
+        """
+        Return list of nodes attached to balancer
+
+        @return: C{list} of L{LBNode}s
+
+        """
+
         raise NotImplementedError, \
                 'balancer_list_nodes not implemented for this driver'
