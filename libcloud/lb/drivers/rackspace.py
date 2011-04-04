@@ -7,7 +7,7 @@ except ImportError:
 
 from libcloud.common.base import Response
 from libcloud.lb.base import LB, LBNode, LBDriver
-from libcloud.lb.types import Provider
+from libcloud.lb.types import Provider, LBState
 from libcloud.common.rackspace import (AUTH_HOST_US,
         RackspaceBaseConnection)
 
@@ -43,6 +43,7 @@ class RackspaceConnection(RackspaceBaseConnection):
             headers['Content-Type'] = 'application/json'
         if method == 'GET':
             params['cache-busing'] = os.urandom(8).encode('hex')
+
         return super(RackspaceConnection, self).request(action=action,
                 params=params, data=data, method=method, headers=headers)
 
@@ -52,6 +53,9 @@ class RackspaceLBDriver(LBDriver):
     type = Provider.RACKSPACE
     api_name = 'rackspace_lb'
     name = 'Rackspace LB'
+
+    LB_STATE_MAP = { 'ACTIVE': LBState.RUNNING,
+                     'BUILD': LBState.PENDING }
 
     def list_balancers(self):
         return self._to_balancers(
@@ -127,7 +131,8 @@ class RackspaceLBDriver(LBDriver):
     def _to_balancer(self, el):
         lb = LB(id=el["id"],
                 name=el["name"],
-                state=el["status"],
+                state=self.LB_STATE_MAP.get(
+                    el["status"], LBState.UNKNOWN),
                 driver=self.connection.driver)
         return lb
 
