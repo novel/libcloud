@@ -20,8 +20,8 @@ class LB(object):
         self.state = state
         self.driver = driver
 
-    def attach_node(self, node):
-        return self.driver.balancer_attach_node(self, node)
+    def attach_node(self, **kwargs):
+        return self.driver.balancer_attach_node(self, **kwargs)
 
     def detach_node(self, node):
         return self.driver.balancer_detach_node(self, node)
@@ -67,7 +67,7 @@ class LBDriver(object):
         raise NotImplementedError, \
                 'balancer_detail not implemented for this driver'
 
-    def balancer_attach_node(self, balancer, node):
+    def balancer_attach_node(self, balancer, **kwargs):
         raise NotImplementedError, \
                 'balancer_attach_node not implemented for this driver'
 
