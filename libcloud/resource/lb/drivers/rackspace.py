@@ -6,8 +6,8 @@ except ImportError:
     import simplejson
 
 from libcloud.common.base import Response
-from libcloud.lb.base import LB, LBNode, LBDriver
-from libcloud.lb.types import Provider, LBState
+from libcloud.resource.lb.base import LB, LBNode, LBDriver
+from libcloud.resource.lb.types import Provider, LBState
 from libcloud.common.rackspace import (AUTH_HOST_US,
         RackspaceBaseConnection)
 
