@@ -3,9 +3,9 @@
 import os
 import time
 
-from libcloud.lb.base import LB, LBNode
-from libcloud.lb.types import Provider, LBState
-from libcloud.lb.providers import get_driver
+from libcloud.resource.lb.base import LB, LBNode
+from libcloud.resource.lb.types import Provider, LBState
+from libcloud.resource.lb.providers import get_driver
 
 def main():
     Rackspace = get_driver(Provider.RACKSPACE)
