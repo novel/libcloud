@@ -3,6 +3,7 @@ import os.path
 import sys
 import unittest
 
+from libcloud.resource.lb.base import LB, LBNode
 from libcloud.resource.lb.drivers.rackspace import RackspaceLBDriver
 
 from test import MockHttp, MockRawResponse
@@ -25,6 +26,51 @@ class CloudFilesTests(unittest.TestCase):
         self.assertEquals(balancers[1].name, "test1")
         self.assertEquals(balancers[1].id, "8156")
 
+    def test_create_balancer(self):
+        balancer = self.driver.create_balancer(name='test2',
+                port=80,
+                nodes=(LBNode(None, '10.1.0.10', 80),
+                    LBNode(None, '10.1.0.11', 80))
+                )
+
+        self.assertEquals(balancer.name, 'test2')
+        self.assertEquals(balancer.id, '8290')
+
+    def test_destroy_balancer(self):
+        balancer = self.driver.list_balancers()[0]
+
+        ret = self.driver.destroy_balancer(balancer)
+        self.assertTrue(ret)
+
+    def test_balancer_detail(self):
+        balancer = self.driver.balancer_detail(balancer_id='8290')
+
+        self.assertEquals(balancer.name, 'test2')
+        self.assertEquals(balancer.id, '8290')
+
+    def test_balancer_list_nodes(self):
+        balancer = self.driver.balancer_detail(balancer_id='8290')
+        nodes = balancer.list_nodes()
+
+        self.assertEquals(len(nodes), 2)
+        self.assertEquals(set(['10.1.0.10:80', '10.1.0.11:80']),
+                set(["%s:%s" % (node.ip, node.port) for node in nodes]))
+
+    def test_balancer_attach_node(self):
+        balancer = self.driver.balancer_detail(balancer_id='8290')
+        node = balancer.attach_node(ip='10.1.0.12', port='80')
+
+        self.assertEquals(node.ip, '10.1.0.12')
+        self.assertEquals(node.port, 80)
+
+    def test_balancer_detach_node(self):
+        balancer = self.driver.balancer_detail(balancer_id='8290')
+        node = balancer.list_nodes()[0]
+
+        ret = balancer.detach_node(node)
+
+        self.assertTrue(ret)
+
 class RackspaceLBMockHttp(MockHttp):
     fixtures = ResourceFileFixtures(os.path.join('lb', 'rackspace'))
 
@@ -37,8 +83,42 @@ class RackspaceLBMockHttp(MockHttp):
         return (httplib.NO_CONTENT, "", headers, httplib.responses[httplib.NO_CONTENT])
 
     def _v1_0_slug_loadbalancers(self, method, url, body, headers):
-        body = self.fixtures.load('v1_slug_loadbalancers.json')
+        if method == "GET":
+            body = self.fixtures.load('v1_slug_loadbalancers.json')
+            return (httplib.OK, body, {}, httplib.responses[httplib.OK])
+        elif method == "POST":
+            body = self.fixtures.load('v1_slug_loadbalancers_post.json')
+            return (httplib.ACCEPTED, body, {},
+                    httplib.responses[httplib.ACCEPTED])
+
+        raise NotImplementedError
+
+    def _v1_0_slug_loadbalancers_8155(self, method, url, body, headers):
+        if method == "DELETE":
+            return (httplib.ACCEPTED, "", {}, httplib.responses[httplib.ACCEPTED])
+
+        raise NotImplementedError
+
+    def _v1_0_slug_loadbalancers_8290(self, method, url, body, headers):
+        body = self.fixtures.load('v1_slug_loadbalancers_8290.json')
         return (httplib.OK, body, {}, httplib.responses[httplib.OK])
+
+    def _v1_0_slug_loadbalancers_8290_nodes(self, method, url, body, headers):
+        if method == "GET":
+            body = self.fixtures.load('v1_slug_loadbalancers_8290_nodes.json')
+            return (httplib.OK, body, {}, httplib.responses[httplib.OK])
+        elif method == "POST":
+            body = self.fixtures.load('v1_slug_loadbalancers_8290_nodes_post.json')
+            return (httplib.ACCEPTED, body, {},
+                    httplib.responses[httplib.ACCEPTED])
+
+        raise NotImplementedError
+
+    def _v1_0_slug_loadbalancers_8290_nodes_30944(self, method, url, body, headers):
+        if method == "DELETE":
+            return (httplib.ACCEPTED, "", {}, httplib.responses[httplib.ACCEPTED])
+
+        raise NotImplementedError
 
 if __name__ == "__main__":
     sys.exit(unittest.main())

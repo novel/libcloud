@@ -112,7 +112,7 @@ class RackspaceLBDriver(LBDriver):
         uri = '/loadbalancers/%s/nodes' % (balancer.id)
         resp = self.connection.request(uri, method='POST',
                 data=json.dumps(node_object))
-        return self._to_nodes(resp.object)
+        return self._to_nodes(resp.object)[0]
 
     def balancer_detach_node(self, balancer, node):
         uri = '/loadbalancers/%s/nodes/%s' % (balancer.id, node.id)
