@@ -133,6 +133,8 @@ class RackspaceLBDriver(LBDriver):
                 name=el["name"],
                 state=self.LB_STATE_MAP.get(
                     el["status"], LBState.UNKNOWN),
+                ip=el["virtualIps"][0]["address"],
+                port=el["port"],
                 driver=self.connection.driver)
         return lb
 

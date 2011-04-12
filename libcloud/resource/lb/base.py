@@ -23,10 +23,12 @@ class LB(object):
     Provide a common interface for handling Load Balancers.
     """
 
-    def __init__(self, id, name, state, driver):
+    def __init__(self, id, name, state, ip, port, driver):
         self.id = str(id) if id else None
         self.name = name
         self.state = state
+        self.ip = ip
+        self.port = port
         self.driver = driver
 
     def attach_node(self, **kwargs):

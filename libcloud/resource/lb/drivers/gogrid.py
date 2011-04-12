@@ -161,6 +161,8 @@ class GoGridLBDriver(BaseGoGridDriver, LBDriver):
                 name=el["name"],
                 state=self.LB_STATE_MAP.get(
                     el["state"]["name"], LBState.UNKNOWN),
+                ip=el["virtualip"]["ip"]["ip"],
+                port=el["virtualip"]["port"],
                 driver=self.connection.driver)
         return lb
 

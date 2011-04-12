@@ -60,7 +60,7 @@ class GoGridTests(unittest.TestCase):
                 set(["%s:%s" % (node.ip, node.port) for node in nodes]))
 
     def test_balancer_attach_node(self):
-        balancer = LB(23530, None, None, None)
+        balancer = LB(23530, None, None, None, None, None)
         node = self.driver.balancer_attach_node(balancer,
                 ip='10.0.0.75', port='80')
 
@@ -68,7 +68,7 @@ class GoGridTests(unittest.TestCase):
         self.assertEquals(node.port, 80)
 
     def test_balancer_detach_node(self):
-        balancer = LB(23530, None, None, None)
+        balancer = LB(23530, None, None, None, None, None)
         node = self.driver.balancer_list_nodes(balancer)[0]
 
         ret = self.driver.balancer_detach_node(balancer, node)
