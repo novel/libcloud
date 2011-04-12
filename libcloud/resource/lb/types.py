@@ -1,10 +1,19 @@
 __all__ = [
         "Provider",
         "LBState",
+        "LibcloudLBError",
+        "LibcloudLBImmutableError",
         ]
+
+from libcloud.common.types import LibcloudError
+
+class LibcloudLBError(LibcloudError): pass
+
+class LibcloudLBImmutableError(LibcloudLBError): pass
 
 class Provider(object):
     RACKSPACE = 0
+    GOGRID = 1
 
 class LBState(object):
     """

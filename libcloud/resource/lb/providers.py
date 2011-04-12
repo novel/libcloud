@@ -10,6 +10,8 @@ __all__ = [
 DRIVERS = {
         Provider.RACKSPACE:
             ('libcloud.resource.lb.drivers.rackspace', 'RackspaceLBDriver'),
+        Provider.GOGRID:
+            ('libcloud.resource.lb.drivers.gogrid', 'GoGridLBDriver'),
 }
 
 def get_driver(provider):
