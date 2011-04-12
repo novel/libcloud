@@ -9,7 +9,7 @@ from libcloud.resource.lb.drivers.rackspace import RackspaceLBDriver
 from test import MockHttp, MockRawResponse
 from test.file_fixtures import ResourceFileFixtures
 
-class CloudFilesTests(unittest.TestCase):
+class RackspaceLBTests(unittest.TestCase):
 
     def setUp(self):
         RackspaceLBDriver.connectionCls.conn_classes = (None,
