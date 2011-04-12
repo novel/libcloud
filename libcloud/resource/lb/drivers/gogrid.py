@@ -45,15 +45,18 @@ class GoGridLBDriver(BaseGoGridDriver, LBDriver):
         waittime = 0
         interval = 2 * 15
 
-        while balancer.id is None and waittime < timeout:
-            balancers = self.list_balancers()
+        if balancer.id is not None:
+            return balancer
+        else:
+            while waittime < timeout:
+                balancers = self.list_balancers()
 
-            for i in balancers:
-                if i.name == balancer.name and i.id is not None:
-                    return i
+                for i in balancers:
+                    if i.name == balancer.name and i.id is not None:
+                        return i
 
-            waittime += interval
-            time.sleep(interval)
+                waittime += interval
+                time.sleep(interval)
 
         raise Exception('Failed to get id')
 
@@ -103,7 +106,7 @@ class GoGridLBDriver(BaseGoGridDriver, LBDriver):
 
         return [ node for node in
                 self._to_nodes(resp.object["list"][0]["realiplist"])
-                if node.ip == ip ]
+                if node.ip == ip ][0]
 
     def balancer_detach_node(self, balancer, node):
         nodes = self.balancer_list_nodes(balancer)
