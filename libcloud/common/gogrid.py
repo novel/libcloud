@@ -154,4 +154,4 @@ class BaseGoGridDriver(object):
             return ips[0].ip
         except IndexError:
             raise LibcloudError('No public unassigned IPs left',
-                    GoGridNodeDriver)
+                    self.driver)
