@@ -32,7 +32,7 @@ class GoGridLBDriver(BaseGoGridDriver, LBDriver):
     name = 'GoGrid LB'
 
     LB_STATE_MAP = { 'On': LBState.RUNNING,
-                     'BUILD': LBState.PENDING }
+                     'Unknown': LBState.UNKNOWN }
 
     def list_balancers(self):
         return self._to_balancers(
